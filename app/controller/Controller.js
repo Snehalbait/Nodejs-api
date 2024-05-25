@@ -37,8 +37,10 @@ exports.GetData = async (req, res, next) => {
     );
     res.send("ERROR : " + err);
   }
+
   Model.GetData(decrypt, async function (err, result) {
     if (err) {
+      console.log(decrypt);
       process.logger.error(
         "Method:[" +
           req.method +
