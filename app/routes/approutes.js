@@ -1,7 +1,9 @@
 module.exports = function (app) {
   var Controller = require("../controller/Controller");
+  var verifyAuthToken = require("../controller/auth/accessToken");
 
-  app.post("/GetData", Controller.GetData); //1
+  app.post("/createUser", Controller.createUser); //1
+  app.post("/generatetoken", Controller.generatetoken); //1
 
-  return app;
+  console.log("llll");
 };

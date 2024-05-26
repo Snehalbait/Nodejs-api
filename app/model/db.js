@@ -4,11 +4,11 @@ var sql = require("mssql");
 
 var config = {
   //ur local db
-  user: "sa",
-  password: "Snehal@987",
+  user: "TestDB",
+  password: "12345",
   dialect: "mssql",
   server: "LAPTOP-3I8F03BS\\MSSQLSERVER2",
-  database: "ERSystem",
+  database: "TestDB",
   requestTimeout: 300000,
   port: 1343, // check the port once again
   debug: true,
@@ -20,13 +20,14 @@ var config = {
   },
 };
 
-sql.connect(config, function (err) {
-  if (err) {
-    console.log(err);
-    request = new sql.Request();
-    // create Request object
-  }
-  console.log("DB Connected");
-  // query to the database and get the records
-});
-module.exports = sql;
+const poolPromise = new sql.ConnectionPool(config)
+  .connect()
+  .then((pool) => {
+    console.log("Connected to MSSQL");
+    return pool;
+  })
+  .catch((err) => console.log("Database Connection Failed! Bad Config: ", err));
+module.exports = {
+  sql,
+  poolPromise,
+};

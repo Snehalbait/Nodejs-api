@@ -24,23 +24,17 @@ var upload = multer({ storage: storage }).array("attachments", 2);
 let decrypt;
 let encrypt;
 
-exports.GetData = async (req, res, next) => {
-  if (!req.headers.authorization) return res.error.Default("Token not found");
-  let UserData = await EncryptDecrypt.decryptJS(req.headers.authorization);
-  UserData = JSON.parse(atob(UserData.split(".")[1]));
-  if (!UserData.EmpId) return res.error.Unauthorized("Unauthorized User");
+exports.createUser = async (req, res, next) => {
   try {
-    decrypt = await EncryptDecrypt.decryptJS(req.body.data);
+    decrypt = await EncryptDecrypt.decryptJS(req.body);
   } catch (err) {
     process.logger.error(
       "Request Method:[" + req.method + "] Url:[" + req.url + "] Error:" + err
     );
     res.send("ERROR : " + err);
   }
-
-  Model.GetData(decrypt, async function (err, result) {
+  Model.createUser(decrypt, async function (err, result) {
     if (err) {
-      // console.log(decrypt);
       process.logger.error(
         "Method:[" +
           req.method +
@@ -51,12 +45,50 @@ exports.GetData = async (req, res, next) => {
           "] error:" +
           JSON.stringify(err)
       ); // logger
-      await SenderrorMail.errornotification("/GetCandidatebysearch", err);
+      res.error.Default("Something went wrong", err);
+    } else {
+      var data = {
+        message: "Sucess",
+        Responsecode: 100,
+        status: result[0],
+      };
+      encrypt = await EncryptDecrypt.EncryptJS(data);
+      res.send({
+        Data: encrypt,
+      });
+    }
+  });
+};
+
+exports.generatetoken = async (req, res, next) => {
+  try {
+    decrypt = await EncryptDecrypt.decryptJS(req.body);
+    console.log(req.body);
+  } catch (err) {
+    process.logger.error(
+      "Request Method:[" + req.method + "] Url:[" + req.url + "] Error:" + err
+    );
+    res.send("ERROR : " + err);
+  }
+  Model.generatetoken(decrypt, async function (err, result) {
+    if (err) {
+      process.logger.error(
+        "Method:[" +
+          req.method +
+          "] url:[" +
+          req.url +
+          "] QueryString:[" +
+          JSON.stringify(req.query) +
+          "] error:" +
+          JSON.stringify(err)
+      ); // logger
       res.error.Default("Something went wrong", err);
       // return err;
     } else {
       var data = {
-        Data: result,
+        message: "Sucess",
+        Responsecode: 100,
+        status: result[0],
       };
       encrypt = await EncryptDecrypt.EncryptJS(data);
       res.send({
