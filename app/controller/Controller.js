@@ -40,7 +40,7 @@ exports.GetData = async (req, res, next) => {
 
   Model.GetData(decrypt, async function (err, result) {
     if (err) {
-      console.log(decrypt);
+      // console.log(decrypt);
       process.logger.error(
         "Method:[" +
           req.method +
